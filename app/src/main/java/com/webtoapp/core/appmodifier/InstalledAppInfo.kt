@@ -16,7 +16,8 @@ data class InstalledAppInfo(
     val isSystemApp: Boolean,
     val installedTime: Long,
     val updatedTime: Long,
-    val apkSize: Long
+    val apkSize: Long,
+    val splitApkPaths: List<String> = emptyList()
 ) {
 
     val formattedSize: String
@@ -55,7 +56,10 @@ sealed class AppModifyResult {
 
     data object ShortcutSuccess : AppModifyResult()
 
-    data class CloneSuccess(val apkPath: String) : AppModifyResult()
+    data class CloneSuccess(
+        val apkPath: String,
+        val installerLaunched: Boolean
+    ) : AppModifyResult()
 
     data class Error(val message: String) : AppModifyResult()
 }

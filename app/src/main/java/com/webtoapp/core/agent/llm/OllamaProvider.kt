@@ -31,7 +31,9 @@ internal class OllamaProvider(@Suppress("UNUSED_PARAMETER") context: Context) : 
         HttpHelpers.applyAuth(b, req.apiKey); trySend(LlmEvent.Started)
         val call = client.newCall(b.build())
         call.enqueue(object : Callback {
-            override fun onFailure(call: Call, e: IOException) { trySend(LlmEvent.Error(e.message?:"Network error")); close() }
+            override fun onFailure(call: Call, e: IOException) {
+                trySend(HttpHelpers.networkError(e, url)); close()
+            }
             override fun onResponse(call: Call, response: Response) {
                 if(!response.isSuccessful){val eb=runCatching{response.body?.string()}.getOrNull().orEmpty();val ra=response.header("Retry-After");val ram=response.header("retry-after-ms");response.body?.close();trySend(HttpHelpers.llmHttpError(response.code,eb,ra,ram));close();return}
                 try {
@@ -48,6 +50,9 @@ internal class OllamaProvider(@Suppress("UNUSED_PARAMETER") context: Context) : 
                         }catch(_:Exception){}
                     }
                     if(!done) trySend(LlmEvent.Done(if(hasTools)FinishReason.TOOL_CALLS else FinishReason.STOP))
+                } catch (e: Exception) {
+                    com.webtoapp.core.logging.AppLogger.w("OllamaProvider", "stream interrupted: ${e.message}")
+                    trySend(LlmEvent.Error("Stream interrupted: ${e.message}", recoverable = true))
                 } finally { runCatching{response.body?.close()};close() }
             }
         }); awaitClose{call.cancel()}

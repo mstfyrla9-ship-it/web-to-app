@@ -72,6 +72,24 @@ class AiApiClient(private val context: Context) {
                         .get()
                         .build()
                 }
+                AiProvider.CUSTOM -> when (apiKey.apiFormat) {
+                    ApiFormat.ANTHROPIC -> Request.Builder()
+                        .url(fullUrl)
+                        .header("x-api-key", apiKey.apiKey.sanitize())
+                        .header("anthropic-version", "2023-06-01")
+                        .get()
+                        .build()
+                    ApiFormat.GOOGLE_GEMINI -> Request.Builder()
+                        .url(fullUrl)
+                        .header("x-goog-api-key", apiKey.apiKey.sanitize())
+                        .get()
+                        .build()
+                    else -> Request.Builder()
+                        .url(fullUrl)
+                        .header("Authorization", "Bearer ${apiKey.apiKey.sanitize()}")
+                        .get()
+                        .build()
+                }
                 AiProvider.OLLAMA, AiProvider.LM_STUDIO, AiProvider.VLLM -> {
 
                     val builder = Request.Builder().url(fullUrl).get()
@@ -140,6 +158,17 @@ class AiApiClient(private val context: Context) {
                     baseUrl, apiKey.apiKey, model.id, probe, 0.7f, apiKey.getEffectiveChatEndpoint()
                 )
                 AiProvider.OLLAMA -> chatWithOllama(baseUrl, apiKey.apiKey, model.id, probe, 0.7f)
+                AiProvider.CUSTOM -> when (apiKey.apiFormat) {
+                    ApiFormat.ANTHROPIC -> chatWithAnthropic(
+                        baseUrl, apiKey.apiKey, model.id, probe, 0.7f,
+                        apiKey.getEffectiveChatEndpoint()
+                    )
+                    ApiFormat.GOOGLE_GEMINI -> chatWithGemini(
+                        baseUrl, apiKey.apiKey, model.id, probe, 0.7f,
+                        apiKey.getEffectiveChatEndpoint()
+                    )
+                    else -> probeOpenAICompatible(baseUrl, apiKey, model.id, probe)
+                }
                 else -> probeOpenAICompatible(baseUrl, apiKey, model.id, probe)
             }
         } catch (e: Exception) {
@@ -182,6 +211,24 @@ class AiApiClient(private val context: Context) {
                         .get()
                         .build()
                 }
+                AiProvider.CUSTOM -> when (apiKey.apiFormat) {
+                    ApiFormat.ANTHROPIC -> Request.Builder()
+                        .url(fullUrl)
+                        .header("x-api-key", apiKey.apiKey.sanitize())
+                        .header("anthropic-version", "2023-06-01")
+                        .get()
+                        .build()
+                    ApiFormat.GOOGLE_GEMINI -> Request.Builder()
+                        .url(fullUrl)
+                        .header("x-goog-api-key", apiKey.apiKey.sanitize())
+                        .get()
+                        .build()
+                    else -> Request.Builder()
+                        .url(fullUrl)
+                        .header("Authorization", "Bearer ${apiKey.apiKey.sanitize()}")
+                        .get()
+                        .build()
+                }
                 AiProvider.OLLAMA, AiProvider.LM_STUDIO, AiProvider.VLLM -> {
                     val builder = Request.Builder().url(fullUrl).get()
                     if (apiKey.apiKey.isNotBlank()) {
@@ -201,7 +248,12 @@ class AiApiClient(private val context: Context) {
             val response = client.newCall(request).execute()
             if (response.isSuccessful) {
                 val body = response.body?.string() ?: ""
-                val models = parseModelsResponse(apiKey.provider, body)
+                val models = parseModelsResponse(
+                    if (apiKey.provider == AiProvider.CUSTOM &&
+                        apiKey.apiFormat == ApiFormat.GOOGLE_GEMINI
+                    ) AiProvider.GOOGLE else apiKey.provider,
+                    body
+                )
                 if (models.isEmpty()) {
 
                     val fallbackModels = getRegistryFallbackModels(apiKey.provider)
@@ -776,6 +828,19 @@ class AiApiClient(private val context: Context) {
                     baseUrl, apiKey.apiKey, model.id, messages, temperature, apiKey.getEffectiveChatEndpoint()
                 )
                 AiProvider.OLLAMA -> chatWithOllama(baseUrl, apiKey.apiKey, model.id, messages, temperature)
+                AiProvider.CUSTOM -> when (apiKey.apiFormat) {
+                    ApiFormat.ANTHROPIC -> chatWithAnthropic(
+                        baseUrl, apiKey.apiKey, model.id, messages, temperature,
+                        apiKey.getEffectiveChatEndpoint()
+                    )
+                    ApiFormat.GOOGLE_GEMINI -> chatWithGemini(
+                        baseUrl, apiKey.apiKey, model.id, messages, temperature,
+                        apiKey.getEffectiveChatEndpoint()
+                    )
+                    else -> chatWithOpenAICompatible(
+                        baseUrl, apiKey.apiKey, model.id, messages, temperature
+                    )
+                }
                 else -> chatWithOpenAICompatible(baseUrl, apiKey.apiKey, model.id, messages, temperature)
             }
         } catch (e: Exception) {
@@ -788,7 +853,8 @@ class AiApiClient(private val context: Context) {
         apiKey: String,
         modelId: String,
         messages: List<Map<String, String>>,
-        temperature: Float
+        temperature: Float,
+        chatEndpoint: String? = null
     ): Result<String> {
 
         val contents = com.google.gson.JsonArray()
@@ -829,8 +895,14 @@ class AiApiClient(private val context: Context) {
             })
         }
 
+        val resolvedEndpoint = chatEndpoint
+            ?.replace("{model}", modelId)
+            ?.replace(":model", modelId)
+            ?.replace(":streamGenerateContent", ":generateContent")
+        val url = resolvedEndpoint?.let { buildApiUrl(baseUrl, it) }
+            ?: "$baseUrl/v1beta/models/$modelId:generateContent"
         val request = Request.Builder()
-            .url("$baseUrl/v1beta/models/$modelId:generateContent")
+            .url(url)
             .header("x-goog-api-key", apiKey)
             .post(gson.toJson(body).toRequestBody("application/json".toMediaType()))
             .build()
@@ -868,7 +940,8 @@ class AiApiClient(private val context: Context) {
         apiKey: String,
         modelId: String,
         messages: List<Map<String, String>>,
-        temperature: Float
+        temperature: Float,
+        chatEndpoint: String? = null
     ): Result<String> {
 
         val systemMessage = messages.find { it["role"] == "system" }?.get("content")
@@ -890,8 +963,9 @@ class AiApiClient(private val context: Context) {
             systemMessage?.let { addProperty("system", it) }
         }
 
+        val url = chatEndpoint?.let { buildApiUrl(baseUrl, it) } ?: "$baseUrl/v1/messages"
         val request = Request.Builder()
-            .url("$baseUrl/v1/messages")
+            .url(url)
             .header("x-api-key", apiKey)
             .header("anthropic-version", "2023-06-01")
             .header("Content-Type", "application/json")

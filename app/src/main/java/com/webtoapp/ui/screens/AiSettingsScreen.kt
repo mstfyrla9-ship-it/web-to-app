@@ -833,6 +833,7 @@ private fun AddApiKeyDialog(
     val customDefaultChatEndpoint = when (selectedApiFormat) {
         ApiFormat.ANTHROPIC -> "/v1/messages"
         ApiFormat.OPENAI_RESPONSES -> "/v1/responses"
+        ApiFormat.GOOGLE_GEMINI -> "/v1beta/models/{model}:streamGenerateContent"
         else -> "/v1/chat/completions"
     }
     var alias by remember { mutableStateOf(initialConfig?.alias ?: "") }
@@ -1006,7 +1007,7 @@ private fun AddApiKeyDialog(
                             expanded = formatExpanded,
                             onDismissRequest = { formatExpanded = false }
                         ) {
-                            listOf(ApiFormat.OPENAI_COMPATIBLE, ApiFormat.ANTHROPIC, ApiFormat.OPENAI_RESPONSES)
+                            listOf(ApiFormat.OPENAI_COMPATIBLE, ApiFormat.ANTHROPIC, ApiFormat.OPENAI_RESPONSES, ApiFormat.GOOGLE_GEMINI)
                                 .forEach { format ->
                                     DropdownMenuItem(
                                         text = { Text(format.displayName) },

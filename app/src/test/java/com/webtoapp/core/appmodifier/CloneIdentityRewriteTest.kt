@@ -1,10 +1,13 @@
 package com.webtoapp.core.appmodifier
 
 import android.content.Context
+import android.content.Intent
 import androidx.test.core.app.ApplicationProvider
 import com.google.common.truth.Truth.assertThat
+import com.webtoapp.core.i18n.Strings
 import com.webtoapp.core.playstore.aab.axml.AxmlBuilder
 import com.webtoapp.core.playstore.aab.axml.AxmlToProtoXml
+import kotlinx.coroutines.runBlocking
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -141,5 +144,48 @@ class CloneIdentityRewriteTest {
         assertThat(names).doesNotContain("META-INF/CERT.EC")
         assertThat(names).contains("META-INF/services/com.example.Service")
         assertThat(names).contains("assets/keep.txt")
+    }
+
+    @Test
+    fun `split APK apps are rejected before clone processing`() = runBlocking {
+        val app = InstalledAppInfo(
+            packageName = "com.example.split",
+            appName = "Split app",
+            versionName = "1",
+            versionCode = 1L,
+            icon = null,
+            apkPath = "/missing/base.apk",
+            isSystemApp = false,
+            installedTime = 0L,
+            updatedTime = 0L,
+            apkSize = 1L,
+            splitApkPaths = listOf("/missing/config.apk")
+        )
+
+        val result = AppCloner(context).cloneAndInstall(
+            AppModifyConfig(originalApp = app, newAppName = "Split clone")
+        )
+
+        assertThat(result).isInstanceOf(AppModifyResult.Error::class.java)
+        assertThat((result as AppModifyResult.Error).message)
+            .isEqualTo(Strings.appModifierSplitApkUnsupported)
+    }
+
+    @Test
+    fun `clone APK share intent grants read access to a content URI`() {
+        val apk = File(context.getExternalFilesDir(null) ?: context.filesDir, "cloned_apks/share.apk")
+        apk.parentFile?.mkdirs()
+        apk.writeBytes(byteArrayOf(1, 2, 3))
+
+        try {
+            val intent = AppModifierApkSharer.createSendIntent(context, apk)
+
+            assertThat(intent.action).isEqualTo(Intent.ACTION_SEND)
+            assertThat(intent.type).isEqualTo("application/vnd.android.package-archive")
+            assertThat(intent.clipData?.getItemAt(0)?.uri?.scheme).isEqualTo("content")
+            assertThat(intent.flags and Intent.FLAG_GRANT_READ_URI_PERMISSION).isNotEqualTo(0)
+        } finally {
+            apk.delete()
+        }
     }
 }

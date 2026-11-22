@@ -5,6 +5,7 @@ import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import com.webtoapp.core.agent.tool.ImageAttachment
+import com.webtoapp.core.logging.AppLogger
 import com.webtoapp.core.network.NetworkModule
 import com.webtoapp.data.model.AiProvider
 import com.webtoapp.util.GsonProvider
@@ -29,7 +30,9 @@ internal class AnthropicProvider(@Suppress("UNUSED_PARAMETER") context: Context)
         HttpHelpers.applyAuth(b, req.apiKey); trySend(LlmEvent.Started)
         val call = client.newCall(b.build())
         call.enqueue(object : Callback {
-            override fun onFailure(call: Call, e: IOException) { trySend(LlmEvent.Error(e.message?:"Network error")); close() }
+            override fun onFailure(call: Call, e: IOException) {
+                trySend(HttpHelpers.networkError(e, url)); close()
+            }
             override fun onResponse(call: Call, response: Response) {
                 if (!response.isSuccessful) { val eb=runCatching{response.body?.string()}.getOrNull().orEmpty(); val ra=response.header("Retry-After"); val ram=response.header("retry-after-ms"); response.body?.close(); trySend(HttpHelpers.llmHttpError(response.code, eb, ra, ram)); close(); return }
                 try {
@@ -54,6 +57,9 @@ internal class AnthropicProvider(@Suppress("UNUSED_PARAMETER") context: Context)
                         } catch(_:Exception){}; true
                     }
                     if(!finished) trySend(LlmEvent.Done(FinishReason.STOP))
+                } catch (e: Exception) {
+                    AppLogger.w("AnthropicProvider", "stream interrupted: ${e.message}")
+                    trySend(LlmEvent.Error("Stream interrupted: ${e.message}", recoverable = true))
                 } finally { runCatching{response.body?.close()}; close() }
             }
         }); awaitClose { call.cancel() }

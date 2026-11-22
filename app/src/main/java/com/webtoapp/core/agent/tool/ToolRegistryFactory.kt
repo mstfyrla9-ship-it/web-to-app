@@ -3,6 +3,11 @@ package com.webtoapp.core.agent.tool
 import com.webtoapp.core.agent.imagery.ImageGeneratorRegistry
 import com.webtoapp.core.agent.plan.PlanManager
 import com.webtoapp.core.agent.tool.builtin.AskUserTool
+import com.webtoapp.core.agent.tool.builtin.AnalyzeAndroidProjectTool
+import com.webtoapp.core.agent.tool.builtin.BuildAndroidProjectTool
+import com.webtoapp.core.agent.tool.builtin.PreflightAndroidProjectBuildTool
+import com.webtoapp.core.agent.tool.builtin.ImportOpenSourceAndroidProjectTool
+import com.webtoapp.core.agent.tool.builtin.ListOpenSourceAndroidProjectsTool
 import com.webtoapp.core.agent.tool.builtin.BatchImportAppsTool
 import com.webtoapp.core.agent.tool.builtin.BuildApkTool
 import com.webtoapp.core.agent.tool.builtin.CheckPlayPolicyTool
@@ -56,6 +61,7 @@ import com.webtoapp.core.agent.tool.builtin.SaveConfigTemplateTool
 import com.webtoapp.core.agent.tool.builtin.ApplyConfigTemplateTool
 import com.webtoapp.core.agent.tool.builtin.ExportConfigTemplateTool
 import com.webtoapp.core.agent.tool.builtin.ImportConfigTemplateTool
+import com.webtoapp.core.agent.tool.builtin.ImportGitHubAndroidProjectTool
 import com.webtoapp.core.agent.tool.builtin.DeleteConfigTemplateTool
 import com.webtoapp.core.agent.tool.builtin.UpdateModuleTool
 import com.webtoapp.core.agent.tool.builtin.WriteFileTool
@@ -81,6 +87,12 @@ class ToolRegistryFactory(
 
     private fun baseTools(): List<Tool> = listOf(
         ReadFileTool(),
+        ListOpenSourceAndroidProjectsTool(),
+        ImportOpenSourceAndroidProjectTool(),
+        PreflightAndroidProjectBuildTool(),
+        BuildAndroidProjectTool(),
+        AnalyzeAndroidProjectTool(),
+        ImportGitHubAndroidProjectTool(),
         ReadAppFileTool(),
         WriteFileTool(),
         EditFileTool(),

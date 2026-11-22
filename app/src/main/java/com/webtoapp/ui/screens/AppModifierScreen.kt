@@ -1,5 +1,7 @@
 package com.webtoapp.ui.screens
 
+import android.content.Context
+import android.content.Intent
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -68,6 +70,7 @@ import androidx.core.graphics.drawable.toBitmap
 import com.webtoapp.core.appmodifier.AppCloner
 import com.webtoapp.core.appmodifier.AppFilterType
 import com.webtoapp.core.appmodifier.AppListProvider
+import com.webtoapp.core.appmodifier.AppModifierApkSharer
 import com.webtoapp.core.appmodifier.AppModifyResult
 import com.webtoapp.core.appmodifier.CloneConfigBuilder
 import com.webtoapp.core.appmodifier.ClonePackageNames
@@ -555,8 +558,30 @@ fun AppModifyFullScreen(
                         onBack()
                     }
                     is AppModifyResult.CloneSuccess -> {
-                        snackbarHostState.showSnackbar(Strings.cloneSuccess)
-                        onBack()
+                        val snackbarResult = snackbarHostState.showSnackbar(
+                            message = if (result.installerLaunched) {
+                                Strings.cloneSuccess
+                            } else {
+                                Strings.appModifierApkReady
+                            },
+                            actionLabel = Strings.shareApk,
+                            withDismissAction = true
+                        )
+                        if (snackbarResult == androidx.compose.material3.SnackbarResult.ActionPerformed) {
+                            try {
+                                shareCloneApk(
+                                    context = context,
+                                    apkPath = result.apkPath,
+                                    chooserTitle = Strings.shareApkTitle.replace("%s", resolvedApp.appName)
+                                )
+                            } catch (e: Exception) {
+                                snackbarHostState.showSnackbar(
+                                    "${Strings.failed}: ${e.localizedMessage ?: e.javaClass.simpleName}"
+                                )
+                            }
+                        } else {
+                            onBack()
+                        }
                     }
                     is AppModifyResult.Error -> {
                         snackbarHostState.showSnackbar("${Strings.failed}: ${result.message}")
@@ -565,6 +590,12 @@ fun AppModifyFullScreen(
             }
         }
     )
+}
+
+private fun shareCloneApk(context: Context, apkPath: String, chooserTitle: String) {
+    val apkFile = File(apkPath)
+    val sendIntent = AppModifierApkSharer.createSendIntent(context, apkFile)
+    context.startActivity(Intent.createChooser(sendIntent, chooserTitle))
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -721,6 +752,7 @@ private fun AppModifyContent(
 
     val hasCustomIcon = editState.newIconUri != null || editState.newIconPath != null
     val cloneBlockedReason = when {
+        app.splitApkPaths.isNotEmpty() -> Strings.appModifierSplitApkUnsupported
         hasCustomIcon -> Strings.appModifierCloneNeedsOriginalIcon
         CloneConfigBuilder.hasAnyModification(editState.toConfig(app)) ->
             Strings.appModifierCloneNoEnhancements
@@ -737,6 +769,7 @@ private fun AppModifyContent(
 
     WtaCreateFlowScaffold(
         title = Strings.modifyApp,
+        snackbarHostState = snackbarHostState,
         onBack = if (isProcessing) {
             { }
         } else {

@@ -122,7 +122,7 @@ fork+exec Node.js、PHP、Python、Go 原生二进制,在本地端口提供服�
 
 [**Agent**](/zh/guide/more-features/agent)
 
-内置最多 60 个工具的调用式助手,可以构建、编辑、操作整个应用。
+内置最多 65 个工具的调用式助手,可以构建、编辑、操作整个应用,并可浏览、导入、预检和构建 Android 源码项目(构建需要可用的 JDK 和 Android SDK)。
 
 </div>
 

@@ -44,6 +44,8 @@ class AiProviderCatalogTest {
             .isEqualTo("/v1/messages")
         assertThat(config(ApiFormat.OPENAI_RESPONSES).getEffectiveChatEndpoint())
             .isEqualTo("/v1/responses")
+        assertThat(config(ApiFormat.GOOGLE_GEMINI).getEffectiveChatEndpoint())
+            .isEqualTo("/v1beta/models/{model}:streamGenerateContent")
         // An explicit endpoint override always wins over the format default.
         assertThat(config(ApiFormat.ANTHROPIC, override = "/api/messages").getEffectiveChatEndpoint())
             .isEqualTo("/api/messages")

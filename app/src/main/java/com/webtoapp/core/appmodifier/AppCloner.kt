@@ -61,7 +61,7 @@ class AppCloner(private val context: Context) {
     private val arscEditor = ArscEditor()
     private val signer = JarSigner(context)
 
-    private val outputDir = File(context.getExternalFilesDir(null), "cloned_apks").apply { mkdirs() }
+    private val outputDir = File(context.getExternalFilesDir(null) ?: context.filesDir, "cloned_apks").apply { mkdirs() }
     private val tempDir = File(context.cacheDir, "clone_temp").apply { mkdirs() }
 
     private val ICON_PATHS = listOf(
@@ -261,6 +261,11 @@ class AppCloner(private val context: Context) {
 
         try {
             AppLogger.d("AppCloner", "Starting clone: ${config.originalApp.packageName}")
+            if (config.originalApp.splitApkPaths.isNotEmpty()) {
+                return@withContext AppModifyResult.Error(
+                    Strings.appModifierSplitApkUnsupported
+                )
+            }
             safeProgress(0, "准备克隆...")
 
             val sourceApk = File(config.originalApp.apkPath)
@@ -361,12 +366,12 @@ class AppCloner(private val context: Context) {
 
             unsignedApk.delete()
 
-            withContext(Dispatchers.Main) {
+            val installerLaunched = withContext(Dispatchers.Main) {
                 com.webtoapp.core.apkbuilder.ApkInstaller.install(context, signedApk)
             }
 
             safeProgress(100, "Done")
-            AppModifyResult.CloneSuccess(signedApk.absolutePath)
+            AppModifyResult.CloneSuccess(signedApk.absolutePath, installerLaunched)
 
         } catch (e: Exception) {
             AppLogger.e("AppCloner", "Cloning failed", e)

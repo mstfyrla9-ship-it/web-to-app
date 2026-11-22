@@ -122,7 +122,7 @@ Image and video players, albums, and portfolios as standalone apps.
 
 [**Agent**](/guide/more-features/agent)
 
-A tool-calling assistant with up to 60 built-in tools that can build, edit, and operate the whole app.
+A tool-calling assistant with up to 65 built-in tools that can build, edit, and operate the whole app, including browsing, importing, preflighting, and building Android source projects with an available JDK and Android SDK.
 
 </div>
 

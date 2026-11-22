@@ -62,7 +62,6 @@ internal class OpenAiCompatProvider(@Suppress("UNUSED_PARAMETER") context: Conte
             override fun onFailure(call: Call, e: IOException) {
                 if (!isRetry) {
                     AppLogger.w("OpenAiCompatProvider", "Network failure, retrying once: ${e.message}")
-                    try { Thread.sleep(1000) } catch (_: InterruptedException) {}
                     executeCall(req, isRetry = true, inFlight = inFlight)
                 } else {
                     // Include the endpoint so a connection-level failure is

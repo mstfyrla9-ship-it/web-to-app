@@ -99,7 +99,7 @@ Privacy & hardening| 50+ vector browser fingerprint disguise, resource encryptio
 Local runtimes| Native Node.js 18.20, PHP 8.4 + Composer 2.10, Python 3.14, official Go 1.26.10, WordPress 7.x over SQLite
 Extensions| Built-in modules, userscripts with "GM_*", MV3 Chrome extensions, live Chrome Web Store search
 APK/AAB output| On-device V1/V2/V3 signing, Google Play AAB export with targetSdk rewrite, keystore management
-Agent| Full-app automation via up to 60 tools: generate, build, export, manage ports/engines/runtimes, clone apps, ad-block rules, config templates, and more; auto-retry on 429/5xx, and rotate to another saved key when a provider rate-limits the session
+Agent| Full-app automation via up to 65 tools: browse curated open-source Android projects, preflight and build Android source, export/import/edit projects, manage ports/engines/runtimes, clone apps, ad-block rules, config templates, and more; auto-retry on 429/5xx, and rotate to another saved key when a provider rate-limits the session
 Host languages| 10 UI languages — 中文 · English · العربية · Português · Español · Français · Deutsch · Русский · 日本語 · 한국어 (Arabic RTL)
 
 ---
@@ -178,7 +178,7 @@ WebToApp has a large number of switches. The sections below group them by use ca
 - MV3 Chrome extension runtime for manifest content scripts in isolated or main worlds, with "chrome.*" polyfills for runtime, storage, tabs, scripting, and declarative network-request parsing.
 - In-app Chrome Web Store search — browse and install browser extensions by keyword (or paste a store URL / extension ID), with offline fallback to manual import.
 - Export codes ("WTA1:" gzip + Base64) and QR sharing via ZXing.
-- Agent — a tool-calling assistant with up to 60 built-in tools covering the entire app surface: create/edit/build/export apps, manage ports and browser engines, install/clear runtimes, ad-block hosts rules, common-config templates (including JSON export and import), usage stats, app cloning, batch import, Play policy checks, and module development. Plan mode waits for user approval; automatic retry/backoff on 429/5xx.
+- Agent — a tool-calling assistant with up to 65 built-in tools covering the app surface: create/edit/build/export apps, browse curated open-source Android projects, import/analyze/preflight/build Android source projects from public GitHub repositories, manage ports and browser engines, install/clear runtimes, ad-block hosts rules, common-config templates, usage stats, app cloning, batch import, Play policy checks, and module development. Native builds require a compatible JDK and Android SDK and are verified by Gradle exit status plus generated package detection. Plan mode waits for user approval; automatic retry/backoff on 429/5xx.
 
 </details><details>
 <summary><b>📱 App experience</b></summary>- Splash screens — image or video, with skip behavior, trim ranges, and fixed orientation.
@@ -210,7 +210,7 @@ WebToApp has a large number of switches. The sections below group them by use ca
 - Website scraper for offline packs — HTML, CSS, JS, images, fonts, "url()", "srcset", "@import", path rewriting, same-domain limits, depth limits, and size limits; parallel streaming worker pool with main-thread progress callbacks.
 - Multi-Web layouts — bottom tabs, top tabs that follow a sideways swipe, cards (1–4 columns and a height slider), feeds, drawers (1–3 columns), site order, the tab opened on launch, per-site icons/theme colors/extraction selectors/refresh intervals, and shared JS/CSS.
 - Gallery apps — categorized media, grid/list/timeline views, shuffle/single-loop, sorting, thumbnail bar, overlays, auto-next, and playback memory.
-- App Modifier — shortcut disguise or real binary clone with manifest/resource patching and re-signing.
+- App Modifier — shortcut disguise or real binary clone with manifest/resource patching and re-signing; share generated APKs, with split-APK limitations reported before cloning.
 
 </details><details>
 <summary><b>🔬 Specialized tools & research features</b></summary>- Device disguise is included for technical demonstration and must only be used with informed user consent.
@@ -228,10 +228,11 @@ How it works:
 3. The Agent executes each tool on-device — read-only tools run immediately; write tools pop a permission dialog first.
 4. Results flow back to the LLM, which continues until the task is done or it asks you a clarifying question.
 
-Up to 60 built-in tools, grouped by domain (55 base + 2 plan mode + 3 imagery; the imagery tools load only with an image-capable model):
+Up to 65 built-in tools, grouped by domain (60 base + 2 plan mode + 3 imagery; the imagery tools load only with an image-capable model):
 
 Domain| Examples
 Files| Read, Write, Edit, Delete, List, Glob, Grep project files
+Android source| Browse curated open-source Android projects, import public GitHub Android Gradle projects, preflight JDK/SDK/wrapper requirements, run Gradle APK/AAB tasks, detect modules/build versions, and edit source through the Agent workspace.
 Apps| List, Get, Create, Update app configurations
 Config templates| List, save, apply, delete, export, and import a common-config JSON file
 App lifecycle| Build APK/AAB, Export, Share, Create shortcut, Duplicate, Delete, Move to category
@@ -347,7 +348,7 @@ Issues| Report a bug or request a feature| "GitHub Issues" (https://github.com/s
 Code| Fix a bug or build a feature in the Android client| "CONTRIBUTING.md" (.github/CONTRIBUTING.md)
 "AGENTS.md"| Authoritative guide for AI coding agents and deep contributors (architecture, shell sync, export pipeline, config drift, packaging constraints)| "AGENTS.md" (AGENTS.md)
 
-Contact & Community
+Our Links, Support & Contributions
 
 The original project is developed by shiaho. Community updates, support, and contributions are coordinated through the following channels.
 
@@ -355,18 +356,15 @@ Platform| Link
 Original GitHub Repository| "github.com/shiaho777/web-to-app" (https://github.com/shiaho777/web-to-app)
 Project Updates & Community| "SourceForging Telegram" (https://t.me/SourceForging)
 Support Email| "mwings740@gmail.com" (mailto:mwings740@gmail.com)
+Sham Cash Support| "963793dbb5e910b81683981b2c8fd9f6"
 
-Support & Contributions
-
-You are welcome to use the application and explore the project. Contributions, suggestions, bug reports, and improvements are welcome.
+Follow project updates and join the community on Telegram. Contributions, suggestions, bug reports, and improvements are welcome.
 
 You may use, study, fork, modify, and redistribute the project only in accordance with the original project's license and all applicable third-party licenses. Preserve the original copyright notices, license files, and attribution requirements.
 
 For project updates and community participation, visit "SourceForging" (https://t.me/SourceForging).
 
 For support and communication, contact: "mwings740@gmail.com" (mailto:mwings740@gmail.com).
-
-Sham Cash Support: Contact details will be added once the verified Sham Cash identifier is provided.
 
 License
 

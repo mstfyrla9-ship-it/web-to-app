@@ -1082,6 +1082,43 @@ private fun CommunityCard() {
         contentPadding = androidx.compose.foundation.layout.PaddingValues(0.dp)
     ) {
         WtaSettingRow(
+            iconContent = { AboutTonalIcon(icon = Icons.Rounded.Groups, shapeIndex = 1, plateSize = 40.dp, iconSize = 20.dp) },
+            showIconPlate = false,
+            title = Strings.communityLinksTitle,
+            subtitle = Strings.communityWelcome.ifDescriptionsShown()
+        )
+        WtaSectionDivider()
+        WtaSettingRow(
+            iconContent = { AboutTonalIcon(icon = Icons.Rounded.Send, shapeIndex = 0, plateSize = 40.dp, iconSize = 20.dp) },
+            showIconPlate = false,
+            title = Strings.projectUpdatesTitle,
+            subtitle = Strings.projectUpdatesDesc.ifDescriptionsShown(),
+            onClick = { context.openUrl("https://t.me/SourceForging") }
+        )
+        WtaSectionDivider()
+        WtaSettingRow(
+            iconContent = { AboutTonalIcon(icon = Icons.Rounded.Forum, shapeIndex = 2, plateSize = 40.dp, iconSize = 20.dp) },
+            showIconPlate = false,
+            title = Strings.supportEmailTitle,
+            subtitle = "mwings740@gmail.com",
+            onClick = { context.openUrl("mailto:mwings740@gmail.com") }
+        )
+        WtaSectionDivider()
+        WtaSettingRow(
+            iconContent = { AboutTonalIcon(icon = Icons.Rounded.ContentCopy, shapeIndex = 1, plateSize = 40.dp, iconSize = 20.dp) },
+            showIconPlate = false,
+            title = Strings.shamCashTitle,
+            subtitle = "963793dbb5e910b81683981b2c8fd9f6",
+            onClick = {
+                context.copyToClipboard(
+                    label = Strings.shamCashTitle,
+                    text = "963793dbb5e910b81683981b2c8fd9f6"
+                )
+                Toast.makeText(context, Strings.copiedToClipboard, Toast.LENGTH_SHORT).show()
+            }
+        )
+        WtaSectionDivider()
+        WtaSettingRow(
             iconContent = { AboutTonalIcon(icon = Icons.Rounded.Forum, shapeIndex = 2, plateSize = 40.dp, iconSize = 20.dp) },
             showIconPlate = false,
             title = Strings.feedbackTitle,

@@ -3741,6 +3741,84 @@ object StringsE {
         AppLanguage.KOREAN -> "이 프로젝트를 더 좋게 만드는 모든 분"
     }
 
+    val communityLinksTitle: String get() = when (Strings.lang) {
+        AppLanguage.CHINESE -> "社区、支持与贡献"
+        AppLanguage.ENGLISH -> "Our Links, Support & Contributions"
+        AppLanguage.ARABIC -> "روابطنا والدعم والمساهمة"
+        AppLanguage.PORTUGUESE -> "Nossos Links, Suporte e Contribuições"
+        AppLanguage.SPANISH -> "Enlaces, soporte y contribuciones"
+        AppLanguage.FRENCH -> "Nos liens, assistance et contributions"
+        AppLanguage.GERMAN -> "Unsere Links, Support & Beiträge"
+        AppLanguage.RUSSIAN -> "Наши ссылки, поддержка и вклад"
+        AppLanguage.JAPANESE -> "リンク・サポート・貢献"
+        AppLanguage.KOREAN -> "링크, 지원 및 기여"
+    }
+
+    val communityWelcome: String get() = when (Strings.lang) {
+        AppLanguage.CHINESE -> "欢迎关注更新并参与贡献，一起改进项目。"
+        AppLanguage.ENGLISH -> "Follow updates and contribute to help improve the project."
+        AppLanguage.ARABIC -> "ندعوكم لمتابعة التحديثات والمساهمة في تطوير المشروع."
+        AppLanguage.PORTUGUESE -> "Acompanhe as novidades e contribua para melhorar o projeto."
+        AppLanguage.SPANISH -> "Sigue las novedades y contribuye a mejorar el proyecto."
+        AppLanguage.FRENCH -> "Suivez les actualités et contribuez à améliorer le projet."
+        AppLanguage.GERMAN -> "Folgen Sie den Neuigkeiten und helfen Sie, das Projekt zu verbessern."
+        AppLanguage.RUSSIAN -> "Следите за обновлениями и помогайте развивать проект."
+        AppLanguage.JAPANESE -> "更新をフォローし、プロジェクトの改善にご協力ください。"
+        AppLanguage.KOREAN -> "업데이트를 확인하고 프로젝트 개선에 함께해 주세요."
+    }
+
+    val projectUpdatesTitle: String get() = when (Strings.lang) {
+        AppLanguage.CHINESE -> "更新与社区"
+        AppLanguage.ENGLISH -> "Updates & Community"
+        AppLanguage.ARABIC -> "التحديثات والمجتمع"
+        AppLanguage.PORTUGUESE -> "Atualizações e comunidade"
+        AppLanguage.SPANISH -> "Novedades y comunidad"
+        AppLanguage.FRENCH -> "Actualités et communauté"
+        AppLanguage.GERMAN -> "Neuigkeiten & Community"
+        AppLanguage.RUSSIAN -> "Обновления и сообщество"
+        AppLanguage.JAPANESE -> "更新・コミュニティ"
+        AppLanguage.KOREAN -> "업데이트 및 커뮤니티"
+    }
+
+    val projectUpdatesDesc: String get() = when (Strings.lang) {
+        AppLanguage.CHINESE -> "关注 SourceForging Telegram"
+        AppLanguage.ENGLISH -> "Follow SourceForging on Telegram"
+        AppLanguage.ARABIC -> "تابعوا SourceForging على تيليغرام"
+        AppLanguage.PORTUGUESE -> "Siga SourceForging no Telegram"
+        AppLanguage.SPANISH -> "Sigue a SourceForging en Telegram"
+        AppLanguage.FRENCH -> "Suivez SourceForging sur Telegram"
+        AppLanguage.GERMAN -> "Folgen Sie SourceForging auf Telegram"
+        AppLanguage.RUSSIAN -> "Подписывайтесь на SourceForging в Telegram"
+        AppLanguage.JAPANESE -> "Telegram で SourceForging をフォロー"
+        AppLanguage.KOREAN -> "Telegram에서 SourceForging을 팔로우하세요"
+    }
+
+    val supportEmailTitle: String get() = when (Strings.lang) {
+        AppLanguage.CHINESE -> "电子邮件支持"
+        AppLanguage.ENGLISH -> "Support Email"
+        AppLanguage.ARABIC -> "البريد الإلكتروني للدعم"
+        AppLanguage.PORTUGUESE -> "E-mail de suporte"
+        AppLanguage.SPANISH -> "Correo de soporte"
+        AppLanguage.FRENCH -> "E-mail d'assistance"
+        AppLanguage.GERMAN -> "Support-E-Mail"
+        AppLanguage.RUSSIAN -> "Почта поддержки"
+        AppLanguage.JAPANESE -> "サポートメール"
+        AppLanguage.KOREAN -> "지원 이메일"
+    }
+
+    val shamCashTitle: String get() = when (Strings.lang) {
+        AppLanguage.CHINESE -> "Sham Cash 支持（点击复制）"
+        AppLanguage.ENGLISH -> "Sham Cash Support (tap to copy)"
+        AppLanguage.ARABIC -> "دعم شام كاش (اضغط للنسخ)"
+        AppLanguage.PORTUGUESE -> "Apoio Sham Cash (toque para copiar)"
+        AppLanguage.SPANISH -> "Apoyo Sham Cash (toca para copiar)"
+        AppLanguage.FRENCH -> "Soutien Sham Cash (appuyez pour copier)"
+        AppLanguage.GERMAN -> "Sham-Cash-Unterstützung (zum Kopieren tippen)"
+        AppLanguage.RUSSIAN -> "Поддержка Sham Cash (нажмите, чтобы скопировать)"
+        AppLanguage.JAPANESE -> "Sham Cash 支援（タップしてコピー）"
+        AppLanguage.KOREAN -> "Sham Cash 후원 (탭하여 복사)"
+    }
+
     val autoCheckUpdates: String get() = when (Strings.lang) {
         AppLanguage.CHINESE -> "自动检查更新"
         AppLanguage.ENGLISH -> "Auto-check for updates"
@@ -12364,6 +12442,32 @@ object StringsE {
         AppLanguage.RUSSIAN -> "Клон не поддерживает splash, активацию и объявление. Используйте ярлык или отключите их"
         AppLanguage.JAPANESE -> "クローンはスプラッシュ/認証/お知らせに未対応。ショートカットを使うかこれらを無効にしてください"
         AppLanguage.KOREAN -> "클론 설치는 스플래시, 활성화, 공지를 지원하지 않습니다. 바로가기를 쓰거나 해당 기능을 끄세요"
+    }
+
+    val appModifierSplitApkUnsupported: String get() = when (Strings.lang) {
+        AppLanguage.CHINESE -> "该应用由多个拆分 APK 组成，当前不能安全克隆；仍可创建快捷方式"
+        AppLanguage.ENGLISH -> "This app is installed as split APKs and cannot be safely cloned yet. You can still create a shortcut"
+        AppLanguage.ARABIC -> "هذا التطبيق مثبت كحزم APK مجزأة ولا يمكن نسخه بأمان حالياً؛ يمكنك إنشاء اختصار"
+        AppLanguage.PORTUGUESE -> "Este app foi instalado como APKs divididos e ainda não pode ser clonado com segurança. Você ainda pode criar um atalho"
+        AppLanguage.SPANISH -> "Esta app está instalada como APK divididos y aún no se puede clonar de forma segura. Puedes crear un acceso directo"
+        AppLanguage.FRENCH -> "Cette app est installée en APK fractionnés et ne peut pas encore être clonée en toute sécurité. Vous pouvez créer un raccourci"
+        AppLanguage.GERMAN -> "Diese App ist als Split-APKs installiert und kann noch nicht sicher geklont werden. Eine Verknüpfung ist weiterhin möglich"
+        AppLanguage.RUSSIAN -> "Это приложение установлено как набор split APK и пока не может быть безопасно клонировано. Ярлык создать можно"
+        AppLanguage.JAPANESE -> "このアプリは分割APKとしてインストールされており、安全に複製できません。ショートカットは作成できます"
+        AppLanguage.KOREAN -> "이 앱은 분할 APK로 설치되어 안전하게 복제할 수 없습니다. 바로가기는 만들 수 있습니다"
+    }
+
+    val appModifierApkReady: String get() = when (Strings.lang) {
+        AppLanguage.CHINESE -> "APK 已生成，但未能打开安装程序。可分享，或稍后从文件管理器安装"
+        AppLanguage.ENGLISH -> "The APK was created, but the installer could not be opened. Share it or install it later from the file manager"
+        AppLanguage.ARABIC -> "تم إنشاء APK، لكن تعذر فتح المثبّت. يمكنك مشاركته أو تثبيته لاحقاً من مدير الملفات"
+        AppLanguage.PORTUGUESE -> "O APK foi criado, mas não foi possível abrir o instalador. Compartilhe ou instale depois pelo gerenciador de arquivos"
+        AppLanguage.SPANISH -> "El APK se creó, pero no se pudo abrir el instalador. Compártelo o instálalo luego desde el administrador de archivos"
+        AppLanguage.FRENCH -> "L'APK a été créé, mais l'installateur n'a pas pu s'ouvrir. Partagez-le ou installez-le plus tard depuis le gestionnaire de fichiers"
+        AppLanguage.GERMAN -> "Die APK wurde erstellt, aber der Installer konnte nicht geöffnet werden. Teilen oder später über den Dateimanager installieren"
+        AppLanguage.RUSSIAN -> "APK создан, но установщик не удалось открыть. Поделитесь файлом или установите его позже через файловый менеджер"
+        AppLanguage.JAPANESE -> "APKは作成されましたが、インストーラーを開けませんでした。共有するか、後でファイル管理からインストールしてください"
+        AppLanguage.KOREAN -> "APK가 생성되었지만 설치 프로그램을 열 수 없습니다. 공유하거나 나중에 파일 관리자에서 설치하세요"
     }
 
     val appModifierCloneEncryptedUnsupported: String get() = when (Strings.lang) {

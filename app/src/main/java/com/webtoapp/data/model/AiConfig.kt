@@ -358,6 +358,7 @@ data class ApiKeyConfig(
             AiProvider.CUSTOM -> when (apiFormat) {
                 ApiFormat.ANTHROPIC -> "/v1/messages"
                 ApiFormat.OPENAI_RESPONSES -> "/v1/responses"
+                ApiFormat.GOOGLE_GEMINI -> "/v1beta/models/{model}:streamGenerateContent"
                 else -> "/v1/chat/completions"
             }
             else -> "/v1/chat/completions"

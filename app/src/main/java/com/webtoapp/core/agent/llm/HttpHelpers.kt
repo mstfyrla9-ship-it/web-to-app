@@ -6,8 +6,17 @@ import com.webtoapp.data.model.AiProvider
 import com.webtoapp.data.model.ApiFormat
 import com.webtoapp.data.model.ApiKeyConfig
 import okhttp3.Request
+import java.io.IOException
 
 internal object HttpHelpers {
+    fun networkError(e: IOException, url: String? = null): LlmEvent.Error {
+        val detail = e.message?.takeIf { it.isNotBlank() } ?: "connection failed"
+        val endpoint = url?.let { " [$it]" }.orEmpty()
+        return LlmEvent.Error(
+            message = "Network error: $detail$endpoint",
+            recoverable = true
+        )
+    }
     fun baseUrl(apiKey: ApiKeyConfig): String =
         (apiKey.baseUrl?.takeIf { it.isNotBlank() } ?: apiKey.provider.baseUrl).trimEnd('/')
 

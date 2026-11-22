@@ -3176,6 +3176,12 @@ object Strings {
     val contributeDesc: String get() = StringsE.contributeDesc
     val contributorsTitle: String get() = StringsE.contributorsTitle
     val contributorsDesc: String get() = StringsE.contributorsDesc
+    val communityLinksTitle: String get() = StringsE.communityLinksTitle
+    val communityWelcome: String get() = StringsE.communityWelcome
+    val projectUpdatesTitle: String get() = StringsE.projectUpdatesTitle
+    val projectUpdatesDesc: String get() = StringsE.projectUpdatesDesc
+    val supportEmailTitle: String get() = StringsE.supportEmailTitle
+    val shamCashTitle: String get() = StringsE.shamCashTitle
     val autoCheckUpdates: String get() = StringsE.autoCheckUpdates
     val autoCheckUpdatesDesc: String get() = StringsE.autoCheckUpdatesDesc
     val updateSkipVersion: String get() = StringsE.updateSkipVersion
@@ -3971,6 +3977,8 @@ object Strings {
     val appModifierRecommended: String get() = StringsE.appModifierRecommended
     val appModifierCloneNeedsOriginalIcon: String get() = StringsE.appModifierCloneNeedsOriginalIcon
     val appModifierCloneNoEnhancements: String get() = StringsE.appModifierCloneNoEnhancements
+    val appModifierSplitApkUnsupported: String get() = StringsE.appModifierSplitApkUnsupported
+    val appModifierApkReady: String get() = StringsE.appModifierApkReady
     val appModifierCloneEncryptedUnsupported: String get() = StringsE.appModifierCloneEncryptedUnsupported
     val appModifierPackageInUse: String get() = StringsE.appModifierPackageInUse
     val appModifierShortcutHint: String get() = StringsE.appModifierShortcutHint

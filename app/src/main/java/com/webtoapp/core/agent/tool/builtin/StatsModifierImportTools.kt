@@ -107,9 +107,10 @@ class ListInstalledAppsTool : Tool {
 class CloneAppTool : Tool {
     override val name = "CloneApp"
     override val description = """
-        Clone an installed app: create a modified copy with a new name/icon and install it.
-        The clone gets a new package name by default; pass newPackageName to choose a valid,
-        non-installed package. Cannot use a custom icon with clone mode.
+        Clone an installed single-APK app with a new name and package, then launch the
+        installer when Android allows it. Split-APK apps and signature-bound encrypted apps
+        are not supported. The APK remains available even if the installer cannot be opened.
+        Pass newPackageName to choose a valid, non-installed package.
     """.trimIndent()
     override val parametersSchema: JsonElement = jsonSchema {
         string("packageName", "Package name of the app to clone.", required = true)
@@ -132,7 +133,9 @@ class CloneAppTool : Tool {
         )
         val cloner = AppCloner(ctx.androidContext)
         return when (val result = cloner.cloneAndInstall(config)) {
-            is AppModifyResult.CloneSuccess -> ToolResult.ok("Clone built and installer launched: ${result.apkPath}")
+            is AppModifyResult.CloneSuccess -> ToolResult.ok(
+                "Clone APK created: ${result.apkPath}. Installer launched: ${result.installerLaunched}."
+            )
             is AppModifyResult.Error -> ToolResult.error("CloneApp failed: ${result.message}")
             else -> ToolResult.ok("Clone result: $result")
         }

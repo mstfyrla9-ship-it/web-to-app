@@ -6,6 +6,7 @@ import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import com.webtoapp.core.network.NetworkModule
 import com.webtoapp.data.model.AiProvider
+import com.webtoapp.data.model.ApiFormat
 import com.webtoapp.util.GsonProvider
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
@@ -19,15 +20,39 @@ import java.util.UUID
 internal class GeminiProvider(@Suppress("UNUSED_PARAMETER") context: Context) : LlmProvider {
     private val gson = GsonProvider.gson; private val sse = SseParser(); private val client get() = NetworkModule.streamingClient
     override fun supports(provider: AiProvider) = provider == AiProvider.GOOGLE
+    override fun supports(req: ChatRequest): Boolean =
+        req.apiKey.provider == AiProvider.GOOGLE ||
+            (req.apiKey.provider == AiProvider.CUSTOM &&
+                req.apiKey.apiFormat == ApiFormat.GOOGLE_GEMINI)
     override fun chatStream(req: ChatRequest): Flow<LlmEvent> = callbackFlow {
         val base = HttpHelpers.baseUrl(req.apiKey); val key = req.apiKey.apiKey.trim()
-        val url = "$base/v1beta/models/${req.model.id}:streamGenerateContent?alt=sse&key=$key"
+        val customGemini = req.apiKey.provider == AiProvider.CUSTOM &&
+            req.apiKey.apiFormat == ApiFormat.GOOGLE_GEMINI
+        val endpoint = req.apiKey.getEffectiveChatEndpoint()
+        val url = if (customGemini) {
+            val resolved = endpoint
+                .replace("{model}", req.model.id)
+                .replace(":model", req.model.id)
+            val joined = HttpHelpers.joinUrl(base, resolved)
+            if (joined.contains("?")) "$joined&alt=sse&key=$key"
+            else "$joined?alt=sse&key=$key"
+        } else {
+            "$base/v1beta/models/${req.model.id}:streamGenerateContent?alt=sse&key=$key"
+        }
         val body = buildBody(req)
-        val request = Request.Builder().url(url).header("Content-Type","application/json").post(gson.toJson(body).toRequestBody("application/json".toMediaType())).build()
+        val requestBuilder = Request.Builder()
+            .url(url)
+            .header("Content-Type","application/json")
+        if (customGemini) requestBuilder.header("x-goog-api-key", key)
+        val request = requestBuilder
+            .post(gson.toJson(body).toRequestBody("application/json".toMediaType()))
+            .build()
         trySend(LlmEvent.Started)
         val call = client.newCall(request)
         call.enqueue(object : Callback {
-            override fun onFailure(call: Call, e: IOException) { trySend(LlmEvent.Error(e.message?:"Network error")); close() }
+            override fun onFailure(call: Call, e: IOException) {
+                trySend(HttpHelpers.networkError(e, url)); close()
+            }
             override fun onResponse(call: Call, response: Response) {
                 if (!response.isSuccessful) { val eb=runCatching{response.body?.string()}.getOrNull().orEmpty(); val ra=response.header("Retry-After"); val ram=response.header("retry-after-ms"); response.body?.close(); trySend(HttpHelpers.llmHttpError(response.code, eb, ra, ram)); close(); return }
                 try {
@@ -63,6 +88,9 @@ internal class GeminiProvider(@Suppress("UNUSED_PARAMETER") context: Context) : 
                         } catch(_:Exception){}; true
                     }
                     trySend(LlmEvent.Done(if(hasTools) FinishReason.TOOL_CALLS else FinishReason.STOP))
+                } catch (e: Exception) {
+                    com.webtoapp.core.logging.AppLogger.w("GeminiProvider", "stream interrupted: ${e.message}")
+                    trySend(LlmEvent.Error("Stream interrupted: ${e.message}", recoverable = true))
                 } finally { runCatching{response.body?.close()}; close() }
             }
         }); awaitClose { call.cancel() }

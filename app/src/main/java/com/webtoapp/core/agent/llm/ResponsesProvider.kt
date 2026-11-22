@@ -42,7 +42,7 @@ internal class ResponsesProvider(@Suppress("UNUSED_PARAMETER") context: Context)
         val call = client.newCall(builder.build())
         call.enqueue(object : Callback {
             override fun onFailure(call: Call, e: IOException) {
-                trySend(LlmEvent.Error(e.message ?: "Network error")); close()
+                trySend(HttpHelpers.networkError(e, url)); close()
             }
 
             override fun onResponse(call: Call, response: Response) {
